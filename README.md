@@ -20,7 +20,7 @@ This part loads the feature (i.e. variable) names provided and searches them for
            - obtained by using grep to search 'features'
 * meanstddata - dataframe containing only mean or standard deviation data (obtained by using meanstd to index alldata)
 
-## Part 3 - appropriately label the activities
+## Part 3 - Appropriately label the activities
 
 This part loads the activity labels for the training and test datasets and combines them into a single vector. It also loads a table which provides descriptive names of each activity. An sapply function is then used to convert all the numerical labels to descriptive names.
 
@@ -31,14 +31,14 @@ This part loads the activity labels for the training and test datasets and combi
 * activity - contains descriptive label of activity for all observations, obtained
 by using sapply on 'alllabels' to assign the descriptive names listed in 'activitylabels'
 
-## Part 4 - label the variables (i.e. features)
+## Part 4 - Label the variables (i.e. features)
 
 The list of columns in the data frame containing mean or std data (generated in Part 2) is used to obtain the corresponding variable names from 'features'. Several calls to the sub function are used to make the variable names more descriptive (based on the details provided in features_info.txt).
 
 * retfeatures - contains the variable names only for mean and standard deviation data.
              Obtained by indexing 'features' with 'meanstd'.
 
-## Part 5 - create a tidy dataset containing means of each variable for each activity and subject
+## Part 5 - Create a tidy dataset containing means of each variable for each activity and subject
 
 This part of the code first creates a dataframe of appropriate size to contain
 the mean data for each activity (i.e. number of activities = 6 rows and number of variables = 66 columns). A for loop is then used to call tapply on each variable column in the combined dataset and calculate a mean for each activity. A similar approach is used to generate a dataframe containing the means for each subject. The two datasets each have a column appended to specify whether the data is an activity or subject mean. The datasets are then combined into a single data frame which is exported to "tidytrackingdata.csv".

@@ -61,9 +61,8 @@ retfeatures <- sub("bodybody", "body", retfeatures)
 retfeatures <- sub("-", "_", retfeatures)
 
 
-## Part 5 - Create an independent tidy data set with the average of 
+## Part 5 - Create an independent tidy data set with the average of each variable for each activity and each subject
 
-## each variable for each activity and each subject
 ## Load the training subjects into a data frame
 trainsubjects <- read.table("train/subject_train.txt")
 names(trainsubjects) <- "Subject"
