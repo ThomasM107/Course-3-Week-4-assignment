@@ -128,6 +128,8 @@ The data were searched (with grep) for only those variables containing either me
 [65] "frequency_body_angular_acceleration_magnitude_mean"              
 [66] "frequency_body_angular_acceleration_magnitude_standard_deviation"
 
+Acceleration data are given in units of g (i.e. standard gravity).
+
 ## Processing and tidying the data
 
 The code run_analysis.R takes the dataframe containing the above variables and sorts the rows (observations) by activity and subject (this gives approximately 50 observations per activity-subject pair, but this is not fixed). The data are then split by both these variables.
