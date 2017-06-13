@@ -58,29 +58,12 @@ retfeatures <- sub("bodygyrojerk", "body_angular_acceleration", retfeatures)
 retfeatures <- sub("^t", "time_",  retfeatures)
 retfeatures <- sub("^f", "frequency_",  retfeatures)
 retfeatures <- sub("bodybody", "body", retfeatures)
+retfeatures <- sub("-", "_", retfeatures)
 
 
 ## Part 5 - Create an independent tidy data set with the average of 
+
 ## each variable for each activity and each subject
-
-numfeatures <- length(retfeatures)
-numactivities <- nrow(activitylabels)
-tidyactivitymean <- data.frame(matrix(nrow = numactivities, ncol = numfeatures))
-
-for (i in 1:numfeatures) {
-  tidydum <- tapply(meanstddata[,i], activity, mean)
-  tidyactivitymean[,i] <- tidydum
-}
-
-rownames(tidyactivitymean) <- rownames(tidydum)
-colnames(tidyactivitymean) <- retfeatures
-
-## Append a label to tidysubjectmean indicating what type of average. The data
-## can in future be split on type if necessary/desired
-tidyactivitymean <- cbind(meantype = "activity", tidyactivitymean)
-
-## Create data frame of averages for each subject
-
 ## Load the training subjects into a data frame
 trainsubjects <- read.table("train/subject_train.txt")
 names(trainsubjects) <- "Subject"
@@ -91,22 +74,34 @@ names(testsubjects) <- "Subject"
 
 allsubjects <- merge(trainsubjects, testsubjects, by.x = "Subject", by.y = "Subject", all = TRUE, sort = FALSE)
 
-totalsubjects <- length(unique(unlist(allsubjects)))
-tidysubjectmean <- data.frame(matrix(nrow =totalsubjects, ncol = numfeatures))
+## Add two columns to the data frame containing activity and subjects (unlist is required from split step below)
+colnames(meanstddata) <- retfeatures
+meanstddata$activity <- activity
+meanstddata$subject <- unlist(allsubjects)
 
-for (i in 1:numfeatures) {
-  tidydum2 <- tapply(meanstddata[,i], allsubjects, mean)
-  tidysubjectmean[,i] <- tidydum
+## Order data in terms of activity and then subject
+sorted <- meanstddata[order(meanstddata$activity, meanstddata$subject),]
+
+## Split the data by activity and subject
+splitted <- split(sorted, list(sorted$activity, sorted$subject))
+
+## Define a dataframe for the mean data
+meancalc <- data.frame(matrix(nrow = length(unique(sorted$activity))*length(unique(sorted$subject)), ncol = length(retfeatures)))
+
+## Use a for loop to extract the mean data from the split dataframe
+for (i in 1:180) {
+meancalc[i, ] = colMeans(splitted[[i]][1:66])
 }
 
-rownames(tidysubjectmean) <- sapply(rownames(tidydum2), function(x) paste0("Subject_", x))
-colnames(tidysubjectmean) <- retfeatures
+## Set up labels for the mean data
+colnames(meancalc) <- retfeatures
+meanlabels <- unique(sorted[,(67:68)])
+names(meanlabels) <- c("activity", "subject")
+dimnames(meanlabels$activity) <- list(NULL, "activity")
 
-## Append a label to tidysubjectmean indicating what type of average. The data
-## can in future be split on type if necessary/desired
-tidysubjectmean <- cbind(meantype = "subject", tidysubjectmean)
+## Combine the data with labels and output to a file
+tidydata <- cbind(meanlabels, meancalc)
+write.table(tidydata, file = "tidytrackingdata.txt", row.names = FALSE)
 
-## Combine the data and output to a file
 
-combinedmeans <- rbind(tidyactivitymean, tidysubjectmean)
-write.csv(combinedmeans, file = "tidytrackingdata.csv")
+
